@@ -1,0 +1,3 @@
+[submodule "Blazor.Console"]
+	path = Blazor.Console
+	url = https://github.com/TrevorDArcyEvans/Blazor.Console
