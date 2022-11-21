@@ -17,7 +17,7 @@ Use your browser to land on the moon!
 This is a C#+Blazor+WebAssembly port of a command line [C# Lunar Lander](https://github.com/TedThompson/Lunar) which is in turn a port
 of a [DEC PDP-8 Lunar Lander](https://www.cs.brandeis.edu/~storer/LunarLander/LunarLander.html).
 
-This port uses a fork of [Blazor.Console](https://github.com/mfe-/Blazor.Console) to simulate a `Console` in a web browser.
+This port uses a fork of [Blazor.Console](https://github.com/TrevorDArcyEvans/Blazor.Console) to simulate a `Console` in a web browser.
 
 ## Prerequisites
 
