@@ -57,8 +57,6 @@ namespace Rocket // Original name
       } while (!gameover);
 
       console.Write("CONTROL OUT\n\n\n*");
-      Thread.Sleep(3000); // Give folks time to see Control Out before the window closes
-      Environment.Exit(1);
     }
 
     private static async Task StartGame()
@@ -246,7 +244,7 @@ namespace Rocket // Original name
     }
 
 // 06.10 (Subroutine)
-    static void EndTurn()
+    private static void EndTurn()
     {
       elapsed = elapsed + step;
       tensec = tensec - step;
