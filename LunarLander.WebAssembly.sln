@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunarLander.WebAssembly", "LunarLander.WebAssembly.csproj", "{5EA9D182-43C6-463D-9B65-806E35D1C624}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blzr.Console", "Blazor.Console\Console.Extensions.Blazor\Blzr.Console.csproj", "{00A973E0-9533-4253-947F-1782428F4C67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console.Extensions", "Blazor.Console\Console.Extensions\Console.Extensions.csproj", "{2042EACA-7C1E-4FB2-9C25-EB42F23CA585}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5EA9D182-43C6-463D-9B65-806E35D1C624}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EA9D182-43C6-463D-9B65-806E35D1C624}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EA9D182-43C6-463D-9B65-806E35D1C624}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EA9D182-43C6-463D-9B65-806E35D1C624}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00A973E0-9533-4253-947F-1782428F4C67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00A973E0-9533-4253-947F-1782428F4C67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00A973E0-9533-4253-947F-1782428F4C67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00A973E0-9533-4253-947F-1782428F4C67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2042EACA-7C1E-4FB2-9C25-EB42F23CA585}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2042EACA-7C1E-4FB2-9C25-EB42F23CA585}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2042EACA-7C1E-4FB2-9C25-EB42F23CA585}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2042EACA-7C1E-4FB2-9C25-EB42F23CA585}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

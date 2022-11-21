@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.7" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\sample-data\weather.json" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Console.Extensions.Blazor\BlazorConsole.razor" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Console.Extensions.Blazor\_Imports.razor" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Demo\Console.Demo\App.razor" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Demo\Console.Demo\Pages\Counter.razor" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Demo\Console.Demo\Pages\FetchData.razor" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Demo\Console.Demo\Pages\Index.razor" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Demo\Console.Demo\Shared\MainLayout.razor" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Demo\Console.Demo\Shared\NavMenu.razor" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Demo\Console.Demo\Shared\SurveyPrompt.razor" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Demo\Console.Demo\_Imports.razor" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Console.Extensions.Blazor\bin\Debug\net6.0\Blzr.Console.deps.json" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Console.Extensions.Blazor\bin\Debug\net6.0\Blzr.Console.staticwebassets.runtime.json" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Console.Extensions.Blazor\obj\Blzr.Console.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Console.Extensions.Blazor\obj\Debug\net6.0\staticwebassets.build.json" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Console.Extensions.Blazor\obj\Debug\net6.0\staticwebassets.development.json" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Console.Extensions.Blazor\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Console.Extensions.Blazor\obj\project.packagespec.json" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Console.Extensions\bin\Debug\net6.0\Console.Extensions.deps.json" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Console.Extensions\bin\Debug\netstandard2.0\Console.Extensions.deps.json" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Console.Extensions\obj\Console.Extensions.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Console.Extensions\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Console.Extensions\obj\project.packagespec.json" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Demo\Console.Demo\Properties\launchSettings.json" />
+    <_ContentIncludedByDefault Remove="Blazor.Console\Demo\Console.Demo\wwwroot\sample-data\weather.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Blazor.Console\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Blazor.Console\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Blazor.Console\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Blazor.Console\**" />
+  </ItemGroup>
+
+</Project>
