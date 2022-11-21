@@ -5,15 +5,26 @@
 
 @inject ILogger<App> _logger
 
+<style>
+  code, input
+  {
+    color: limegreen;
+    background-color: black;
+  }
+</style>
+
 <PageTitle>Lunar Lander</PageTitle>
+
 <p>
-  <Blzr.Console.BlazorConsole
-    @ref="_console"
-    Name="Lunar Lander"
-    ShowRepositoryUrl="false"
-    AutoScroll="false"
-    SetAutoFocusToConsoleInput="false"
-    UseOriginalSystemConsole="false"/>
+  <div style="background: black">
+    <Blzr.Console.BlazorConsole
+      @ref="_console"
+      Name="Lunar Lander"
+      ShowRepositoryUrl="false"
+      AutoScroll="false"
+      SetAutoFocusToConsoleInput="false"
+      UseOriginalSystemConsole="false"/>
+  </div>
 </p>
 
 @code
