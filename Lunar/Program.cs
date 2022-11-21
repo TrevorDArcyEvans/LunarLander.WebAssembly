@@ -1,315 +1,301 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using static System.Math;
+﻿using static System.Math;
+using console = Console.Extensions.Console;
 
 namespace Rocket // Original name
 {
-    class Lunar  // Name used for later versions in BASIC
+  public class Lunar // Name used for later versions in BASIC
+  {
+    static decimal altitude; //altitude
+    static decimal velocity; //vessel speed
+    static decimal mass; //vessel mass
+    static decimal tensec; //time
+    static decimal quantity;
+    static decimal tmpAlt;
+    static decimal tmpVel;
+    static decimal burn; //Burn qty
+    static decimal elapsed = 0; //elapsed time
+    static decimal step; //step
+    static decimal velMPH; //vertical speed
+
+    static string outcome; //result message
+
+    const decimal netmass = 16500; //fuel mass
+    const decimal z = 1.8M;
+    const decimal gravity = 0.001M; //gravity
+
+    static bool gameover = false; //Flag to quit game
+
+    public static async Task StartAsync()
     {
-        static decimal altitude;        //altitude
-        static decimal velocity;        //vessel speed
-        static decimal mass;            //vessel mass
-        static decimal tensec;          //time
-        static decimal quantity;
-        static decimal tmpAlt;
-        static decimal tmpVel;
-        static decimal burn;            //Burn qty
-        static decimal elapsed = 0;     //elapsed time
-        static decimal step;            //step
-        static decimal velMPH;          //vertical speed
-        
-        static string outcome;          //result message
+      // Window Setup
 
-        const decimal netmass = 16500;  //fuel mass
-        const decimal z = 1.8M;
-        const decimal gravity = 0.001M; //gravity
+      // Set up size, titlebar, and colors
+      // TODO     console.SetWindowSize(70, 25);
+      // TODO     console.SetBufferSize(70, 25);
+      // TODO     console.Title = "LUNAR - Jim Storer, Ted Thompson";
+      // TODO     console.BackgroundColor = ConsoleColor.Black;
+      console.ForegroundColor = ConsoleColor.Green;
+      console.Clear();
+      // End window setup
 
-        static bool gameover = false;   //Flag to quit game
-        
-        /* Below is code to simply disable the Maximize button, Minimize button, and Size
-         * menu option so the window will always mimic the fixed width display (printer  
-         * really) of a PDP-8 
-         */
-        
-        private const int MF_BYCOMMAND = 0x00000000;
-        public const int SC_SIZE = 0xF000;
-        public const int SC_MINIMIZE = 0xF020;
-        public const int SC_MAXIMIZE = 0xF030;
+      // Print header on the screen.
+      centerPrint("LUNAR");
+      centerPrint("Originally written for the DEC PDP-8 by Jim Storer, 1969");
+      centerPrint("Ported to C# by Ted Thompson, 2017");
+      console.WriteLine("======================================================================\n\n");
 
-        [DllImport("user32.dll")]
-        public static extern int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags);
+      // 01.04
+      //Start Port of Original Program
+      console.Write("CONTROL CALLING LUNAR MODULE. MANUAL CONTROL IS NECESSARY\n");
+      console.Write("YOU MAY RESET FUEL RATE K EACH 10 SECS TO 0 OR ANY VALUE\n");
+      console.Write("BETWEEN 8 & 200 LBS/SEC. YOU'VE 16000 LBS FUEL. ESTIMATED\n");
+      console.Write("FREE FALL IMPACT TIME-120 SECS. CAPSULE WEIGHT-32500 LBS\n");
 
-        [DllImport("user32.dll")]
-        private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+      do
+      {
+        await StartGame();
+      } while (!gameover);
 
-        [DllImport("kernel32.dll", ExactSpelling = true)]
-        private static extern IntPtr GetConsoleWindow();
+      console.Write("CONTROL OUT\n\n\n*");
+      Thread.Sleep(3000); // Give folks time to see Control Out before the window closes
+      Environment.Exit(1);
+    }
 
-        /* End of console control code */
+    private static async Task StartGame()
+    {
+      // Init Variables 04.10 (G[ravity], N[etmass] and Z are constants and defined above)
+      altitude = 120;
+      velocity = 1;
+      mass = 32500;
+      elapsed = 0; // Not in original FOCAL code, but appears in later versions, 
+      // so I'm assumeing it's absense was a bug.  Without this the time keeps
+      // accumulating on subsequent play throughs.
 
-        static void Main(string[] args)
+      console.Write("FIRST RADAR CHECK COMING UP\n\n\n");
+      console.Write("COMMENCE LANDING PROCEDURE\nTIME,SECS   ALTITUDE,");
+      console.Write("MILES+FEET   VELOCITY,MPH   FUEL,LBS   FUEL RATE\n");
+
+      while (true)
+      {
+        // Elapsed Time
+        console.Write(string.Format("{0,8:F0}", elapsed));
+        // Altitude
+        console.Write(string.Format("{0,15}{1,7}", Truncate(altitude), Truncate(5280 * (altitude - Truncate(altitude)))));
+        // VSI
+        console.Write(string.Format("{0,15:F2}", 3600 * velocity));
+        // Fuel
+        console.Write(string.Format("{0,12:F1}", mass - netmass));
+        // Burn Setting Prompt
+        console.Write(string.Format("{0,9}", "K=:"));
+
+        do
         {
-            // Window Setup
-            // These DeleteMenu calls do the dirty work of nuking the unwanted buttons / options
-            DeleteMenu(GetSystemMenu(GetConsoleWindow(), false), SC_SIZE, MF_BYCOMMAND);
-            DeleteMenu(GetSystemMenu(GetConsoleWindow(), false), SC_MINIMIZE, MF_BYCOMMAND);
-            DeleteMenu(GetSystemMenu(GetConsoleWindow(), false), SC_MAXIMIZE, MF_BYCOMMAND);
+          string input = await console.ReadLineAsync();
+          try
+          {
+            burn = decimal.Parse(input);
+          }
+          catch (FormatException)
+          {
+            burn = (input == "") ? 0 : -1;
+          }
 
-            // Set up size, titlebar, and colors
-            Console.SetWindowSize(70, 25);
-            Console.SetBufferSize(70, 25);
-            Console.Title = "LUNAR - Jim Storer, Ted Thompson";
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Clear();
-            // End window setup
-
-            // Print header on the screen.
-            centerPrint("LUNAR");
-            centerPrint("Originally written for the DEC PDP-8 by Jim Storer, 1969");
-            centerPrint("Ported to C# by Ted Thompson, 2017");
-            Console.WriteLine("======================================================================\n\n");
-
-            // 01.04
-            //Start Port of Original Program
-            Console.Write("CONTROL CALLING LUNAR MODULE. MANUAL CONTROL IS NECESSARY\n");
-            Console.Write("YOU MAY RESET FUEL RATE K EACH 10 SECS TO 0 OR ANY VALUE\n");
-            Console.Write("BETWEEN 8 & 200 LBS/SEC. YOU'VE 16000 LBS FUEL. ESTIMATED\n");
-            Console.Write("FREE FALL IMPACT TIME-120 SECS. CAPSULE WEIGHT-32500 LBS\n");
-
-            do
+          if ((burn != 0) && (burn < 8) || (burn > 200))
+          {
+            console.Write("NOT POSSIBLE");
+            for (tmpAlt = 1; tmpAlt < 52; tmpAlt++)
             {
-                StartGame();
-            } while (!gameover);
+              console.Write(".");
+            }
 
-            Console.Write("CONTROL OUT\n\n\n*");
-            System.Threading.Thread.Sleep(3000); // Give folks time to see Control Out before the window closes
-            Environment.Exit(1);
-        }
+            console.Write("K=:");
+            burn = -1;
+          }
+        } while (burn == -1); // parse loop
 
-        static void StartGame()
+        tensec = 10;
+        do
         {
-            // Init Variables 04.10 (G[ravity], N[etmass] and Z are constants and defined above)
-            altitude = 120;
-            velocity = 1;
-            mass = 32500;
-            elapsed = 0; // Not in original FOCAL code, but appears in later versions, 
-                         // so I'm assumeing it's absense was a bug.  Without this the time keeps
-                         // accumulating on subsequent play throughs.
+          if (mass - netmass - 0.001M < 0) // 3.10
+          {
+            await AfterActionReport(true, false);
+            return;
+          }
 
-            Console.Write("FIRST RADAR CHECK COMING UP\n\n\n");
-            Console.Write("COMMENCE LANDING PROCEDURE\nTIME,SECS   ALTITUDE,");
-            Console.Write("MILES+FEET   VELOCITY,MPH   FUEL,LBS   FUEL RATE\n");
+          if (tensec - 0.001M < 0)
+          {
+            continue;
+          }
 
-            while (true)
+          step = tensec; // 03.10 end statement
+          if (netmass + step * burn - mass > 0)
+          {
+            step = (mass - netmass) / burn;
+          }
+
+          DecentCalc();
+          if (tmpAlt <= 0)
+          {
+            await AfterActionReport(false, true);
+            return;
+          }
+
+          if (velocity > 0)
+          {
+            if (tmpVel < 0)
             {
-                // Elapsed Time
-                Console.Write("{0,8:F0}", elapsed);
-                // Altitude
-                Console.Write("{0,15}{1,7}", Truncate(altitude), Truncate(5280 * (altitude - Truncate(altitude))));
-                // VSI
-                Console.Write("{0,15:F2}", 3600 * velocity);
-                // Fuel
-                Console.Write("{0,12:F1}", mass - netmass);
-                // Burn Setting Prompt
-                Console.Write("{0,9}", "K=:");
-
-                do
+              // GroupEight();
+              do
+              {
+                velMPH = (1 - mass * gravity / (z * burn)) / 2;
+                step = mass * velocity / (z * burn * (velMPH + (decimal)Sqrt((double)velMPH * (double)velMPH + (double)velocity / (double)z))) + .05M;
+                DecentCalc();
+                if (tmpAlt <= 0)
                 {
-                    string input = Console.ReadLine();
-                    try
-                    {
-                        burn = decimal.Parse(input);
-                    }
-                    catch (FormatException)
-                    {
-                        burn = (input == "") ? 0 : -1;
-                    }
-                    if ((burn != 0) && (burn < 8) || (burn > 200))
-                    {
-                        Console.Write("NOT POSSIBLE");
-                        for (tmpAlt = 1; tmpAlt < 52; tmpAlt++)
-                        {
-                            Console.Write(".");
-                        }
-                        Console.Write("K=:");
-                        burn = -1;
-                    }
-                } while (burn == -1); // parse loop
+                  await AfterActionReport(false, true);
+                  return;
+                }
 
-                tensec = 10;
-                do
+                EndTurn();
+                if (tmpVel > 0)
                 {
-                    if (mass - netmass - 0.001M < 0) // 3.10
-                    {
-                        AfterActionReport(true, false);
-                        return;
-                    }
-                    if (tensec - 0.001M < 0)
-                    {
-                        continue;
-                    }
-                    step = tensec; // 03.10 end statement
-                    if (netmass + step * burn - mass > 0)
-                    {
-                        step = (mass - netmass) / burn;
-                    }
-                    DecentCalc();
-                    if (tmpAlt <= 0)
-                    {
-                        AfterActionReport(false, true);
-                        return;
-                    }
-                    if (velocity > 0)
-                    {
-                        if (tmpVel < 0)
-                        {
-                            // GroupEight();
-                            do
-                            {
-                                velMPH = (1 - mass * gravity / (z * burn)) / 2;
-                                step = mass * velocity / (z * burn * (velMPH + (decimal)Sqrt((double)velMPH * (double)velMPH + (double)velocity / (double)z))) + .05M;
-                                DecentCalc();
-                                if (tmpAlt <= 0)
-                                {
-                                    AfterActionReport(false, true);
-                                    return;
-                                }
-                                EndTurn();
-                                if (tmpVel > 0)
-                                {
-                                    // GroupThree();
-                                    continue;
-                                }
-                            } while (velocity > 0);
+                  // GroupThree();
+                  continue;
+                }
+              } while (velocity > 0);
 
-                            continue;
-                        }
-                    }
-                    EndTurn();
-                } while (tensec - 0.001M > 0);
+              continue;
             }
-        }
+          }
 
-        /// <summary>
-        /// End of game report on outcome
-        /// </summary>
-        /// <param name="outtagas">Are we out of fuel</param>
-        /// <param name="impacted">Did we descend below 0ft in the last 10 seconds</param>
-        static void AfterActionReport(bool outtagas, bool impacted) //260
+          EndTurn();
+        } while (tensec - 0.001M > 0);
+      }
+    }
+
+    /// <summary>
+    /// End of game report on outcome
+    /// </summary>
+    /// <param name="outtagas">Are we out of fuel</param>
+    /// <param name="impacted">Did we descend below 0ft in the last 10 seconds</param>
+    private static async Task AfterActionReport(bool outtagas, bool impacted) //260
+    {
+      if (impacted)
+      {
+        while (step - 0.005M > 0)
         {
-            if (impacted)
-            {
-                while (step - 0.005M > 0)
-                {
-                    step = 2 * altitude / (velocity + (decimal)Sqrt((double)velocity * (double)velocity + 2 * (double)altitude * ((double)gravity - (double)z * (double)burn / (double)mass)));
-                    DecentCalc();
-                    EndTurn();
-                }
-            }
-            if (outtagas)
-            {
-                Console.Write("FUEL OUT AT {0,8:F2} SECS\n", elapsed);
-                step = ((decimal)Sqrt((double)velocity * (double)velocity + 2 * (double)altitude * (double)gravity) - velocity) / gravity;
-                velocity = velocity + gravity * step;
-                elapsed = elapsed + step;
-            }
-            velMPH = 3600 * velocity;
-            Console.Write("ON THE MOON AT {0,8:F2} SECS\n", elapsed);
-            Console.Write("IMPACT VELOCITY OF {0,8:F2} M.P.H.\nFUEL LEFT:{1,9:F2} LBS\n", velMPH, mass - netmass);
-
-            if (velMPH <= 1)
-            {
-                outcome = "PERFECT LANDING !-(LUCKY)\n";
-            }
-            else if (velMPH <= 10)
-            {
-                outcome = "GOOD LANDING-(COULD BE BETTER)";
-            }
-            else if (velMPH <= 22)
-            {
-                outcome = "CONGRATULATIONS ON A POOR LANDING";
-            }
-            else if (velMPH < 40)
-            {
-                outcome = "CRAFT DAMAGE. GOOD LUCK";
-            }
-            else if (velMPH < 60)
-            {
-                outcome = "CRASH LANDING-YOU'VE 5 HRS OXYGEN";
-            }
-            else
-            {
-                outcome = string.Format("SORRY,BUT THERE WERE NO SURVIVORS-YOU BLEW IT!\nIN FACT YOU BLASTED A NEW LUNAR CRATER{0,9:F2} FT. DEEP\n", velMPH * .277777M);
-            }
-            Console.WriteLine(outcome);
-            Console.Write("\n\n\n\nTRY AGAIN?\n");
-            while (true)
-            {
-                Console.Write("(ANS. YES OR NO)");
-                string p = Console.ReadLine();
-                if (p.ToUpper() == "NO")
-                {
-                    gameover = true;
-                    return;
-                }
-                else if (p.ToUpper() == "YES")
-                {
-                    return;
-                }
-            }
+          step = 2 * altitude / (velocity + (decimal)Sqrt((double)velocity * (double)velocity + 2 * (double)altitude * ((double)gravity - (double)z * (double)burn / (double)mass)));
+          DecentCalc();
+          EndTurn();
         }
+      }
+
+      if (outtagas)
+      {
+        console.Write(string.Format("FUEL OUT AT {0,8:F2} SECS\n", elapsed));
+        step = ((decimal)Sqrt((double)velocity * (double)velocity + 2 * (double)altitude * (double)gravity) - velocity) / gravity;
+        velocity = velocity + gravity * step;
+        elapsed = elapsed + step;
+      }
+
+      velMPH = 3600 * velocity;
+      console.Write(string.Format("ON THE MOON AT {0,8:F2} SECS\n", elapsed));
+      console.Write(string.Format("IMPACT VELOCITY OF {0,8:F2} M.P.H.\nFUEL LEFT:{1,9:F2} LBS\n", velMPH, mass - netmass));
+
+      if (velMPH <= 1)
+      {
+        outcome = "PERFECT LANDING !-(LUCKY)\n";
+      }
+      else if (velMPH <= 10)
+      {
+        outcome = "GOOD LANDING-(COULD BE BETTER)";
+      }
+      else if (velMPH <= 22)
+      {
+        outcome = "CONGRATULATIONS ON A POOR LANDING";
+      }
+      else if (velMPH < 40)
+      {
+        outcome = "CRAFT DAMAGE. GOOD LUCK";
+      }
+      else if (velMPH < 60)
+      {
+        outcome = "CRASH LANDING-YOU'VE 5 HRS OXYGEN";
+      }
+      else
+      {
+        outcome = string.Format("SORRY,BUT THERE WERE NO SURVIVORS-YOU BLEW IT!\nIN FACT YOU BLASTED A NEW LUNAR CRATER{0,9:F2} FT. DEEP\n", velMPH * .277777M);
+      }
+
+      console.WriteLine(outcome);
+      console.Write("\n\n\n\nTRY AGAIN?\n");
+      while (true)
+      {
+        console.Write("(ANS. YES OR NO)");
+        string p = await console.ReadLineAsync();
+        if (p.ToUpper() == "NO")
+        {
+          gameover = true;
+          return;
+        }
+        else if (p.ToUpper() == "YES")
+        {
+          return;
+        }
+      }
+    }
 
 // 06.10 (Subroutine)
-        static void EndTurn()  
-        {
-            elapsed = elapsed + step;
-            tensec = tensec - step;
-            mass = mass - step * burn;
-            altitude = tmpAlt;
-            velocity = tmpVel;
-            return;
-        }                       
+    static void EndTurn()
+    {
+      elapsed = elapsed + step;
+      tensec = tensec - step;
+      mass = mass - step * burn;
+      altitude = tmpAlt;
+      velocity = tmpVel;
+      return;
+    }
 
 // 09.10 (Subroutine)
-        static void DecentCalc()   
-        {
-            quantity = step * burn / mass;
+    private static void DecentCalc()
+    {
+      quantity = step * burn / mass;
 
-            decimal q2 = quantity * quantity;  
-            decimal q3 = quantity * quantity * quantity; 
-            decimal q4 = quantity * quantity * quantity * quantity; 
-            decimal q5 = quantity * quantity * quantity * quantity * quantity; 
-            decimal neg_q = quantity * -1;
-            tmpVel = velocity + gravity * step + z * (neg_q - q2 / 2 - q3 / 3 - q4 / 4 - q5 / 5);
-            tmpAlt = altitude - gravity * step * step / 2 - velocity * step + z * step * (quantity / 2 + q2 / 6 + q3 / 12 + q4 / 20 + q5 / 30);
+      decimal q2 = quantity * quantity;
+      decimal q3 = quantity * quantity * quantity;
+      decimal q4 = quantity * quantity * quantity * quantity;
+      decimal q5 = quantity * quantity * quantity * quantity * quantity;
+      decimal neg_q = quantity * -1;
+      tmpVel = velocity + gravity * step + z * (neg_q - q2 / 2 - q3 / 3 - q4 / 4 - q5 / 5);
+      tmpAlt = altitude - gravity * step * step / 2 - velocity * step + z * step * (quantity / 2 + q2 / 6 + q3 / 12 + q4 / 20 + q5 / 30);
 
-            return;
-        }
-
-        // Routine added for centering header text.
-        /// <summary>
-        /// Print msg centered in window
-        /// </summary>
-        /// <param name="msg">String to print</param>
-        static void centerPrint(string msg)
-        {
-            Console.WriteLine("{0," + (Console.WindowWidth + msg.Length) / 2 + "}", msg);
-        }
-
-        // Print routine found at 02.72 of the original program to inform the player 
-        // they made an invalid entry.
-        static void TwoPointSevenTwo()
-        {
-            Console.Write("NOT POSSIBLE");
-            for(int x=1; x < 52; x++)
-            {
-                Console.Write(".");
-            }
-            Console.Write("K=:");
-            return;
-        }
+      return;
     }
+
+    // Routine added for centering header text.
+    /// <summary>
+    /// Print msg centered in window
+    /// </summary>
+    /// <param name="msg">String to print</param>
+    private static void centerPrint(string msg)
+    {
+      // TODO   console.WriteLine("{0," + (console.WindowWidth + msg.Length) / 2 + "}", msg);
+    }
+
+    // Print routine found at 02.72 of the original program to inform the player 
+    // they made an invalid entry.
+    private static void TwoPointSevenTwo()
+    {
+      console.Write("NOT POSSIBLE");
+      for (int x = 1; x < 52; x++)
+      {
+        console.Write(".");
+      }
+
+      console.Write("K=:");
+      return;
+    }
+  }
 }
 
 /****************************************************************

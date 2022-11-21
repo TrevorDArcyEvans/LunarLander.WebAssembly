@@ -55,4 +55,9 @@
     <Content Remove="Blazor.Console\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="Blazor.Console\Console.Extensions.Blazor\Blzr.Console.csproj" />
+    <ProjectReference Include="Blazor.Console\Console.Extensions\Console.Extensions.csproj" />
+  </ItemGroup>
+
 </Project>

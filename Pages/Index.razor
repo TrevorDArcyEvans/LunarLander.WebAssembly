@@ -1,7 +1,38 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+@using global::Blzr.Console;
+@using Microsoft.Extensions.Logging;
 
-<h1>Hello, world!</h1>
+@inject ILogger<App> _logger
 
-Welcome to your new app.
+<PageTitle>Lunar Lander</PageTitle>
+
+<p>
+  <button @onclick="OnStartLunarLander">start console app</button>
+</p>
+
+<p>
+  <Blzr.Console.BlazorConsole
+    @ref="_console"
+    Name="Lunar Lander"
+    ShowRepositoryUrl="false"
+    AutoScroll="false"
+    SetAutoFocusToConsoleInput="false"
+    UseOriginalSystemConsole="false"/>
+</p>
+
+@code
+{
+  BlazorConsole _console;
+
+  private void OnStartLunarLander(MouseEventArgs mouseEventArgs)
+  {
+    InvokeAsync(Rocket.Lunar.StartAsync).ContinueWith(a =>
+    {
+      if (a.Exception != null)
+      {
+        _logger.LogError(a.Exception, nameof(OnStartLunarLander));
+      }
+    });
+  }
+}
