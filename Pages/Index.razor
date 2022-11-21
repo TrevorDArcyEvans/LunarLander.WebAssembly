@@ -6,11 +6,6 @@
 @inject ILogger<App> _logger
 
 <PageTitle>Lunar Lander</PageTitle>
-
-<p>
-  <button @onclick="OnStartLunarLander">start console app</button>
-</p>
-
 <p>
   <Blzr.Console.BlazorConsole
     @ref="_console"
@@ -25,14 +20,16 @@
 {
   BlazorConsole _console;
 
-  private void OnStartLunarLander(MouseEventArgs mouseEventArgs)
+  protected override Task OnAfterRenderAsync(bool firstRender)
   {
     InvokeAsync(Rocket.Lunar.StartAsync).ContinueWith(a =>
     {
       if (a.Exception != null)
       {
-        _logger.LogError(a.Exception, nameof(OnStartLunarLander));
+        _logger.LogError(a.Exception, nameof(Rocket.Lunar.StartAsync));
       }
     });
+
+    return base.OnAfterRenderAsync(firstRender);
   }
 }
