@@ -29,19 +29,16 @@ namespace Rocket // Original name
     {
       // Window Setup
 
-      // Set up size, titlebar, and colors
-      // TODO     console.SetWindowSize(70, 25);
-      // TODO     console.SetBufferSize(70, 25);
-      // TODO     console.Title = "LUNAR - Jim Storer, Ted Thompson";
-      // TODO     console.BackgroundColor = ConsoleColor.Black;
-      console.ForegroundColor = ConsoleColor.Green;
+      // Set up what little we can
+      // NOTE:  a *lot* of things are not supported in a browser :-(
       console.Clear();
       // End window setup
 
       // Print header on the screen.
-      centerPrint("LUNAR");
-      centerPrint("Originally written for the DEC PDP-8 by Jim Storer, 1969");
-      centerPrint("Ported to C# by Ted Thompson, 2017");
+      CenterPrint("LUNAR");
+      CenterPrint("Originally written for the DEC PDP-8 by Jim Storer, 1969");
+      CenterPrint("Ported to C# by Ted Thompson, 2017");
+      CenterPrint("Ported to C#+WebAssembly by Trevor D'Arcy-Evans, 2022");
       console.WriteLine("======================================================================\n\n");
 
       // 01.04
@@ -66,7 +63,7 @@ namespace Rocket // Original name
       velocity = 1;
       mass = 32500;
       elapsed = 0; // Not in original FOCAL code, but appears in later versions, 
-      // so I'm assumeing it's absense was a bug.  Without this the time keeps
+      // so I'm assuming it's absence was a bug.  Without this the time keeps
       // accumulating on subsequent play throughs.
 
       console.Write("FIRST RADAR CHECK COMING UP\n\n\n");
@@ -76,15 +73,15 @@ namespace Rocket // Original name
       while (true)
       {
         // Elapsed Time
-        console.Write(string.Format("{0,8:F0}", elapsed));
+        console.Write($"{elapsed,8:F0}");
         // Altitude
-        console.Write(string.Format("{0,15}{1,7}", Truncate(altitude), Truncate(5280 * (altitude - Truncate(altitude)))));
+        console.Write($"{Truncate(altitude),15}{Truncate(5280 * (altitude - Truncate(altitude))),7}");
         // VSI
-        console.Write(string.Format("{0,15:F2}", 3600 * velocity));
+        console.Write($"{3600 * velocity,15:F2}");
         // Fuel
-        console.Write(string.Format("{0,12:F1}", mass - netmass));
+        console.Write($"{mass - netmass,12:F1}");
         // Burn Setting Prompt
-        console.Write(string.Format("{0,9}", "K=:"));
+        console.Write($"{"K=:",9}");
 
         do
         {
@@ -190,15 +187,15 @@ namespace Rocket // Original name
 
       if (outtagas)
       {
-        console.Write(string.Format("FUEL OUT AT {0,8:F2} SECS\n", elapsed));
+        console.Write($"FUEL OUT AT {elapsed,8:F2} SECS\n");
         step = ((decimal)Sqrt((double)velocity * (double)velocity + 2 * (double)altitude * (double)gravity) - velocity) / gravity;
         velocity = velocity + gravity * step;
         elapsed = elapsed + step;
       }
 
       velMPH = 3600 * velocity;
-      console.Write(string.Format("ON THE MOON AT {0,8:F2} SECS\n", elapsed));
-      console.Write(string.Format("IMPACT VELOCITY OF {0,8:F2} M.P.H.\nFUEL LEFT:{1,9:F2} LBS\n", velMPH, mass - netmass));
+      console.Write($"ON THE MOON AT {elapsed,8:F2} SECS\n");
+      console.Write($"IMPACT VELOCITY OF {velMPH,8:F2} M.P.H.\nFUEL LEFT:{mass - netmass,9:F2} LBS\n");
 
       if (velMPH <= 1)
       {
@@ -222,7 +219,7 @@ namespace Rocket // Original name
       }
       else
       {
-        outcome = string.Format("SORRY,BUT THERE WERE NO SURVIVORS-YOU BLEW IT!\nIN FACT YOU BLASTED A NEW LUNAR CRATER{0,9:F2} FT. DEEP\n", velMPH * .277777M);
+        outcome = $"SORRY,BUT THERE WERE NO SURVIVORS-YOU BLEW IT!\nIN FACT YOU BLASTED A NEW LUNAR CRATER{velMPH * .277777M,9:F2} FT. DEEP\n";
       }
 
       console.WriteLine(outcome);
@@ -275,9 +272,10 @@ namespace Rocket // Original name
     /// Print msg centered in window
     /// </summary>
     /// <param name="msg">String to print</param>
-    private static void centerPrint(string msg)
+    private static void CenterPrint(string msg)
     {
-      // TODO   console.WriteLine("{0," + (console.WindowWidth + msg.Length) / 2 + "}", msg);
+      // Console.WindowWidth is not supported in a browser :-(
+      console.WriteLine($"{msg}");
     }
 
     // Print routine found at 02.72 of the original program to inform the player 
